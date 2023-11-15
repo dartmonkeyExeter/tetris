@@ -31,9 +31,12 @@ def display_grid():
         except IndexError:
             break
 
+def update_grid():
+    grid[4,5] = squarePiece(piece).shape
 clear()
-
-display_grid()
+while True:
+    update_grid()
+    display_grid()
 
 
     
