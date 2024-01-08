@@ -79,6 +79,7 @@ print(grid)
 running = True
 
 while running:
+    previous = update_piece_position(example)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -94,7 +95,10 @@ while running:
                 example.rotate_clockwise()
             if event.key == pygame.K_SPACE:
                 example.rotate_counter_clockwise()
+    remove_previous(previous)
+    previous = update_piece_position(example)
 
+    window.fill((0, 0, 0))
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if grid[i][j] == 1:
