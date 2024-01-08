@@ -15,7 +15,6 @@ class tetronimo:
         self.color = color
         self.shape = shape
         self.rotation = 0
-    
     def move_down(self):
         self.y += 1
     
@@ -27,19 +26,10 @@ class tetronimo:
         if self.x < 10 - len(self.shape[0]):
             self.x += 1
     def rotate_clockwise(self):
-        if self.x + len(self.shape[0]) < 10:
-            self.shape = np.rot90(self.shape)
-            self.rotation += 1
-            if self.rotation == 4:
-                self.rotation = 0
+        self.shape = np.rot90(self.shape, k=-1)
+        self.rotation = (self.rotation - 1) % 4
         
-    
-    def rotate_counter_clockwise(self):
-        if self.x > 0 and self.x + len(self.shape[0]) < 10:
-            self.shape = np.rot90(self.shape)
-            self.rotation -= 1
-            if self.rotation == -1:
-                self.rotation = 3
+            
 
 grid = np.zeros((20, 10))
 
@@ -51,11 +41,11 @@ line_piece = [
 ]
 
 t_piece = [
-    [0, 1, 0],
-    [1, 1, 1]
+    [1, 1, 1],
+    [0, 1, 0]
 ]
 
-example = tetronimo(5, 0, (255, 0, 0), t_piece)
+current_piece = tetronimo(5, 0, (255, 0, 0), t_piece)
 
 # Add line piece to grid
 def update_piece_position(piece):
@@ -71,44 +61,53 @@ def remove_previous(previous):
     for i in previous:
         grid[i[0]][i[1]] = 0
 
-previous = update_piece_position(example)
-example.move_down()
-example.rotate_counter_clockwise()
+previous = update_piece_position(current_piece)
+current_piece.move_down()
 remove_previous(previous)
-previous = update_piece_position(example)
+previous = update_piece_position(current_piece)
 print(grid)
 
 # pygame loop
 
 running = True
 
+var1 = 0
+
 while running:
-    previous = update_piece_position(example)
+    previous = update_piece_position(current_piece)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         
+        
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                example.move_left()
+                current_piece.move_left()
             if event.key == pygame.K_RIGHT:
-                example.move_right()
+                current_piece.move_right()
             if event.key == pygame.K_DOWN:
-                example.move_down()
+                print(current_piece.y + len(current_piece.shape))
+                if current_piece.y + len(current_piece.shape) < 20:
+                    current_piece.move_down()
+                    var1 = 0
             if event.key == pygame.K_UP:
-                example.rotate_clockwise()
-            if event.key == pygame.K_SPACE:
-                example.rotate_counter_clockwise()
-    remove_previous(previous)
-    previous = update_piece_position(example)
+                current_piece.rotate_clockwise()
 
+    if var1 > 0.2 and current_piece.y + len(current_piece.shape) < 20:
+        current_piece.move_down()
+        var1 = 0
+
+    remove_previous(previous)
+    previous = update_piece_position(current_piece)
+    
     window.fill((0, 0, 0))
     for i in range(len(grid)):
         for j in range(len(grid[i])):
             if grid[i][j] == 1:
                 pygame.draw.rect(window, (255, 255, 255), (j * 20, i * 20, 20, 20))
+            if grid[i][j] == 2:
+                pygame.draw.rect(window, (255, 0, 0), (j * 20, i * 20, 20, 20))
 
     pygame.display.update()
-    print(example.x, example.y)
-
+    var1 += 0.01
     clock.tick(60)
