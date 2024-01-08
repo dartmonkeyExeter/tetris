@@ -21,10 +21,13 @@ class tetronimo:
     
     def move_left(self):    
         self.x -= 1
+        if self.x < 0:
+            self.x = 9
     
     def move_right(self):
         self.x += 1
-    
+        if self.x > 9:
+            self.x = 0
     def rotate_clockwise(self):
         self.shape = np.rot90(self.shape)
         self.rotation += 1
@@ -85,16 +88,19 @@ while running:
             running = False
         
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                example.move_left()
-            if event.key == pygame.K_RIGHT:
-                example.move_right()
-            if event.key == pygame.K_DOWN:
-                example.move_down()
-            if event.key == pygame.K_UP:
-                example.rotate_clockwise()
-            if event.key == pygame.K_SPACE:
-                example.rotate_counter_clockwise()
+            try:
+                if event.key == pygame.K_LEFT:
+                    example.move_left()
+                if event.key == pygame.K_RIGHT:
+                    example.move_right()
+                if event.key == pygame.K_DOWN:
+                    example.move_down()
+                if event.key == pygame.K_UP:
+                    example.rotate_clockwise()
+                if event.key == pygame.K_SPACE:
+                    example.rotate_counter_clockwise()
+            except IndexError:
+                pass
     remove_previous(previous)
     previous = update_piece_position(example)
 
@@ -105,5 +111,6 @@ while running:
                 pygame.draw.rect(window, (255, 255, 255), (j * 20, i * 20, 20, 20))
 
     pygame.display.update()
+    print(grid)
 
     clock.tick(60)
